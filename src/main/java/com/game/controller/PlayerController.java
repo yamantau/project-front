@@ -2,12 +2,17 @@ package com.game.controller;
 
 import com.game.entity.Player;
 import com.game.service.PlayerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -20,6 +25,7 @@ import static java.util.Objects.nonNull;
 @RestController
 @RequestMapping("/rest/players")
 public class PlayerController {
+    private final static Logger logger = LoggerFactory.getLogger(PlayerController.class);
 
     private final PlayerService playerService;
 
@@ -63,6 +69,14 @@ public class PlayerController {
     @PostMapping("/{ID}")
     public ResponseEntity<PlayerInfo> updatePlayer(@PathVariable("ID") long id,
                                                    @RequestBody PlayerInfo info) {
+        logger.error(id + info.name + info.title +  info.race + info.profession + info.banned);
+        System.out.println(id + info.name + info.title +  info.race + info.profession + info.banned);
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("D:\\proger\\JavaRush\\InternShip\\lvl_6_7_Front\\src\\main\\webapp\\resources\\asd.txt"))){
+            bw.write(id + info.name + info.title +  info.race + info.profession + info.banned);
+            bw.write(1);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         if (id <= 0) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         if (nonNull(info.name) && (info.name.length() > 12 || info.name.isEmpty())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         if (nonNull(info.title) && info.title.length() > 30) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
